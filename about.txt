@@ -1,0 +1,10 @@
+The game itself including:
+    - Sound
+    - Control
+    - Score saving
+
+Implementation:
+    - Documentation
+    - Installer file{.exe} (/download instructions)
+
+    ~ Multiplayer (fork a branch)
