@@ -1,2 +1,3 @@
 # Snake-Game-
-Snake game with out touch
+Snake game with basic functionality
+
