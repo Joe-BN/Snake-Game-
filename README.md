@@ -1,2 +1,4 @@
 # Snake-Game-
-Snake game with out touch
+Snake game with basic functionality + trial to implement multiplayer functionality
+
+
