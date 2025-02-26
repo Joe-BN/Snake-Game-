@@ -9,7 +9,7 @@ eg:
 """
 
 import pygame
-
+import time
 
 def play_sound(track):
     pygame.mixer.init()
@@ -26,6 +26,19 @@ def play_sound(track):
     
     
 
-#def fetch_docs():
+def fetch_win():
     # the code to fetch the documentaion when needed
+    try:
+        trophy_image = pygame.image.load("images/Trophy.png").convert_alpha()
+        trophy_image = pygame.transform.scale(trophy_image, (300, 300))
 
+    except Exception as e:
+        print("Error loading trophy.png:", e)
+        trophy_image = None
+
+    return trophy_image
+    time.sleep(3)
+
+    play_sound(3)
+
+    

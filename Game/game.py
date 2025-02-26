@@ -1,12 +1,12 @@
-import pygame
-import sys
-import random
-import time
-import data as data
-import util as util
+import pygame               # game rendering library
+import sys                  # access system file paths
+import random               # randomization library
+import time                 # time and delay
+import data as data         # interact with database
+import util as util         # utility functionalities
+import landing as settings  #ADD  the landing page
 
 def get_random_food_position(snake, game_width, game_height, cell_size):
-    """Returns a random (x, y) position for food that is not on the snake."""
     cols = game_width // cell_size
     rows = game_height // cell_size
     while True:
@@ -19,217 +19,244 @@ def main():
     pygame.init()
     data.initialize_db()
 
-    # --- Configuration ---
-    # Dimensions for game area and side menu.
+    # Configuration
     GAME_AREA_WIDTH = 800
     SIDE_MENU_WIDTH = 220
     TOTAL_WIDTH = GAME_AREA_WIDTH + SIDE_MENU_WIDTH
     HEIGHT = 800
-
-    # Grid/Cell size
     cell_size = 20
 
-    # Create game window
     screen = pygame.display.set_mode((TOTAL_WIDTH, HEIGHT))
     pygame.display.set_caption("Snake Game")
 
-    # Define colors
-    BLACK     = (0, 0, 0)
-    GREY = (183,183,183)
-    # GREY      = (200, 200, 200)
-    DARK_GREY = (14, 9, 8) # a bit red  :)
-    GRID_COLOUR = (85, 96, 97)
-    WHITE     = (255, 255, 255)
-    GREEN     = (0, 200, 0)
-    RED       = (255, 0, 0)
-    BLUE      = (0, 0, 255)
+    # Colors
+    BLACK = (0, 0, 0)
+    GREY = (183, 183, 183)
+    DARK_GREY = (14, 9, 8)
+    WHITE = (255, 255, 255)
+    GREEN = (0, 200, 0)
+    RED = (255, 0, 0)
+    BLUE = (0, 0, 255)
 
-
-    # Set up font
+    # Font
     font_size = 25
     font = pygame.font.SysFont(None, font_size)
+    large_font = pygame.font.SysFont(None, 50)  # Added for settings screen title
 
-    # Difficulty settings
-    # The move_interval (in milliseconds) determines how fast the snake moves.
-    difficulty = 2
-
+    # Difficulty settings (will be set by settings screen)
+    difficulty = 1
+    mult = 1
     move_interval = {
-        1: 150, 
-        2: 100,
-        3: 70,
-        4: 40,
+        1: 150,
+        2: 100, 
+        3: 60, 
+        4: 30
     }
 
     clock = pygame.time.Clock()
 
+    # Game variables
+    snake1 = []
+    snake2 = []
+
+    direction1 = (cell_size, 0)
+    direction2 = (-cell_size, 0)
+
+    score1 = 0
+    score2 = 0
+
+    food = None
+    game_state = 'playing'
+    last_move_time = 0
+
     def reset_game():
-        nonlocal snake, direction, score, food, game_state, last_move_time
-
-        # Start snake in the middle of the game area (aligned to the grid).
-        start_x = (GAME_AREA_WIDTH // cell_size // 2) * cell_size
-        start_y = (HEIGHT // cell_size // 2) * cell_size
-
-        # Snake is a list of (x, y) tuples; starting with 3 segments.
-        snake = [
-            (start_x, start_y),
-            (start_x - cell_size, start_y),
-            (start_x - 2 * cell_size, start_y)
+        nonlocal snake1, snake2, direction1, direction2, score1, score2, food, game_state, last_move_time
+        start_x1 = (GAME_AREA_WIDTH // cell_size // 3) * cell_size
+        start_y1 = (HEIGHT // cell_size // 2) * cell_size
+        start_x2 = (2 * GAME_AREA_WIDTH // cell_size // 3) * cell_size
+        start_y2 = ((HEIGHT // cell_size // 2) * cell_size) + (3 * cell_size)
+        
+        snake1 = [
+            (start_x1, start_y1),
+            (start_x1 - cell_size, start_y1), 
+            (start_x1 - 2 * cell_size, start_y1)
+        ]
+        snake2 = [
+            (start_x2, start_y2), 
+            (start_x2 + cell_size, start_y2), 
+            (start_x2 + 2 * cell_size, start_y2)
         ]
 
+        direction1 = (cell_size, 0)
+        direction2 = (-cell_size, 0)
 
-        direction = (cell_size, 0)  # Initially direction
-
-        score = 0
-        food = get_random_food_position(snake, GAME_AREA_WIDTH, HEIGHT, cell_size)
+        score1, score2 = 0, 0
+        food = get_random_food_position(snake1 + snake2, GAME_AREA_WIDTH, HEIGHT, cell_size)
         game_state = 'playing'
         last_move_time = pygame.time.get_ticks()
 
+    # Get settings from settings screen
+    mode, difficulty_str = settings.settings_screen(screen, font, large_font)
+    multiplayer = (mode == 'multi')
+    difficulty_map = {
+        'easy': 1, 
+        'medium': 2, 
+        'hard': 3, 
+        'asian': 4
+    }
+    difficulty = difficulty_map[difficulty_str]
+    mult_map = {
+        1: 1, 
+        2: 2, 
+        3: 4, 
+        4: 8
+    }
+    mult = mult_map[difficulty]
 
-    # Initial Game Variables
-    snake = []
-    direction = (cell_size, 0)
-    score = 0 # tracking  score (map this to a database and get the value o start) !!!! also display high score when playing
-    food = None
-    game_state = 'playing' # keep a record of the event state (playing and gameover)
-    last_move_time = pygame.time.get_ticks()
-    reset_game()  # Set initial game state.
-
+    # Initialize game state
+    reset_game()
 
     # Game Loop
     while True:
-        # Event Handling functionality
-        for event in pygame.event.get(): # listen for inputs or actions
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            # Direction control (prevent reversing)
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    if direction != (0, cell_size):
-                        direction = (0, -cell_size)
-                elif event.key == pygame.K_DOWN:
-                    if direction != (0, -cell_size):
-                        direction = (0, cell_size)
-                elif event.key == pygame.K_LEFT:
-                    if direction != (cell_size, 0):
-                        direction = (-cell_size, 0)
-                elif event.key == pygame.K_RIGHT:
-                    if direction != (-cell_size, 0):
-                        direction = (cell_size, 0)
+                # Player 1 controls
+                if event.key == pygame.K_UP and direction1 != (0, cell_size):
+                    direction1 = (0, -cell_size)
+                elif event.key == pygame.K_DOWN and direction1 != (0, -cell_size):
+                    direction1 = (0, cell_size)
+                elif event.key == pygame.K_LEFT and direction1 != (cell_size, 0):
+                    direction1 = (-cell_size, 0)
+                elif event.key == pygame.K_RIGHT and direction1 != (-cell_size, 0):
+                    direction1 = (cell_size, 0)
 
-                # Change difficulty with number keys.
-                elif event.key == pygame.K_1:
-                    difficulty = 1
-                elif event.key == pygame.K_2:
-                    difficulty = 2
-                elif event.key == pygame.K_3:
-                    difficulty = 3
-                elif event.key == pygame.K_4:
-                    difficulty = 4
+                # Player 2 controls
+                if multiplayer:
+                    if event.key == pygame.K_w and direction2 != (0, cell_size):
+                        direction2 = (0, -cell_size)
+                    elif event.key == pygame.K_s and direction2 != (0, -cell_size):
+                        direction2 = (0, cell_size)
+                    elif event.key == pygame.K_a and direction2 != (cell_size, 0):
+                        direction2 = (-cell_size, 0)
+                    elif event.key == pygame.K_d and direction2 != (-cell_size, 0):
+                        direction2 = (cell_size, 0)
 
-
-                # Restart the game if over.
+                # Game over controls
                 if game_state == 'game_over' and event.key == pygame.K_r:
                     reset_game()
-
+                elif game_state == 'game_over' and event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
 
         # Game Update
         if game_state == 'playing':
             current_time = pygame.time.get_ticks()
             if current_time - last_move_time > move_interval[difficulty]:
+                new_head1 = (snake1[0][0] + direction1[0], snake1[0][1] + direction1[1])
+                if multiplayer:
+                    new_head2 = (snake2[0][0] + direction2[0], snake2[0][1] + direction2[1])
 
-                # Calculate new head position based on current direction.
-                new_head = (snake[0][0] + direction[0], snake[0][1] + direction[1])
-
-                # Check for collision with walls.
-                if (new_head[0] < 0 or new_head[0] >= GAME_AREA_WIDTH or
-                    new_head[1] < 0 or new_head[1] >= HEIGHT):
-                    game_state = 'game_over'
-
-                # Check for collision with self.
-                elif new_head in snake:
+                if (new_head1 in snake1 or new_head1 in (snake2 if multiplayer else []) or
+                    new_head1[0] < 0 or new_head1[0] >= GAME_AREA_WIDTH or
+                    new_head1[1] < 0 or new_head1[1] >= HEIGHT):
                     game_state = 'game_over'
                 else:
-                    # Insert new head into the snake.
-                    snake.insert(0, new_head)
-
-                    # Check if food is eaten.
-                    if new_head == food:
-                        score += 1
-                        # play sound when eat
-                        util.play_sound(1)
-
-                        food = get_random_food_position(snake, GAME_AREA_WIDTH, HEIGHT, cell_size)
+                    snake1.insert(0, new_head1)
+                    if new_head1 == food:
+                        score1 += (1 * mult)
+                        food = get_random_food_position(snake1 + (snake2 if multiplayer else []), GAME_AREA_WIDTH, HEIGHT, cell_size)
                     else:
-                        # Remove the tail segment if no food eaten.
-                        snake.pop()
+                        snake1.pop()
+
+                if multiplayer:
+                    if (new_head2 in snake2 or new_head2 in snake1 or
+                        new_head2[0] < 0 or new_head2[0] >= GAME_AREA_WIDTH or
+                        new_head2[1] < 0 or new_head2[1] >= HEIGHT):
+                        game_state = 'game_over'
+                    else:
+                        snake2.insert(0, new_head2)
+                        if new_head2 == food:
+                            score2 += (1 * mult)
+                            food = get_random_food_position(snake1 + snake2, GAME_AREA_WIDTH, HEIGHT, cell_size)
+                        else:
+                            snake2.pop()
                 last_move_time = current_time
 
         # Drawing
         screen.fill(BLACK)
-
-        # Draw game area background.
         pygame.draw.rect(screen, GREY, (0, 0, GAME_AREA_WIDTH, HEIGHT))
 
-        # Draw the snake.
-        for segment in snake:
+        for segment in snake1:
             pygame.draw.rect(screen, GREEN, (segment[0], segment[1], cell_size, cell_size))
 
-        # Draw the food.
+        if multiplayer:
+            for segment in snake2:
+                pygame.draw.rect(screen, BLUE, (segment[0], segment[1], cell_size, cell_size))
+
         pygame.draw.rect(screen, RED, (food[0], food[1], cell_size, cell_size))
 
-        # Draw grid lines for clarity.
-        for x in range(0, GAME_AREA_WIDTH, cell_size):
-            pygame.draw.line(screen, GRID_COLOUR, (x, 0), (x, HEIGHT))
-        for y in range(0, HEIGHT, cell_size):
-            pygame.draw.line(screen, GRID_COLOUR, (0, y), (GAME_AREA_WIDTH, y))
+        # grid display
+        #GRID_COLOUR = (85, 96, 97)
+        #for x in range(0, GAME_AREA_WIDTH, cell_size):
+        #    pygame.draw.line(screen, GRID_COLOUR, (x, 0), (x, HEIGHT))
 
-        # Draw side menu background.
+        #for y in range(0, HEIGHT, cell_size):
+        #    pygame.draw.line(screen, GRID_COLOUR, (0, y), (GAME_AREA_WIDTH, y))
+
         pygame.draw.rect(screen, DARK_GREY, (GAME_AREA_WIDTH, 0, SIDE_MENU_WIDTH, HEIGHT))
-
-
-        # Render and display score, difficulty, and instructions.
-        score_text = font.render(f"Score: {score}", True, WHITE)
+        
+        score_str = f"Score: {score1}" if not multiplayer else f"P1: {score1}  P2: {score2}"
+        score_text = font.render(score_str, True, WHITE)
         screen.blit(score_text, (GAME_AREA_WIDTH + 10, 20))
 
         diff_text = font.render(f"Difficulty: {difficulty}", True, WHITE)
         screen.blit(diff_text, (GAME_AREA_WIDTH + 10, 60))
 
-        instruct_text = font.render("Arrows to move", True, WHITE)
+        control_text = "Arrows to move" if not multiplayer else "P1: Arrows  P2: W/A/S/D"
+        instruct_text = font.render(control_text, True, WHITE)
         screen.blit(instruct_text, (GAME_AREA_WIDTH + 10, 100))
 
-        # enter into documentation later
         instruct_text2 = font.render("1,2,3 or 4 for diff", True, WHITE)
         screen.blit(instruct_text2, (GAME_AREA_WIDTH + 10, 140))
 
-        score_text = font.render(f"Hight Score: {data.get_high_score()}", True, WHITE)
-        screen.blit(score_text, (GAME_AREA_WIDTH + 10, 770))
+        high_score = data.get_high_score()
+        high_score_text = font.render(f"High Score: {high_score}", True, WHITE)
+        screen.blit(high_score_text, (GAME_AREA_WIDTH + 10, 770))
 
-           
-
-        # Display text on game over
         if game_state == 'game_over':
-            if (data.update_high_score(score)):
-                over_text = font.render("NEW HIGH SCORE !!!", True, BLUE)
-                screen.blit(over_text, (GAME_AREA_WIDTH + 10, 500))
-                util.play_sound(3)
+            if multiplayer:
+                over_text = font.render("Game Over!", True, BLUE)
+                screen.blit(over_text, (GAME_AREA_WIDTH + 10, 200))
+            else:
+                if data.update_high_score(score1):
+                    over_text = font.render("NEW HIGH SCORE !!!", True, BLUE)
+                    screen.blit(over_text, (GAME_AREA_WIDTH + 10, 500))
 
-            else :
-                util.play_sound(2)
-                
+                    util.fetch_win()
 
-            data.update_high_score(score)
-        
-            time.sleep(2) # small pause so that the sound plays (adjustable)
+                    overlay_active = True
+                    if overlay_active:
+                        trophy_image = util.fetch_win()
+                        if trophy_image:
+                            trophy_rect = trophy_image.get_rect(center=(GAME_AREA_WIDTH // 2, HEIGHT // 2 + 50))
+                            screen.blit(trophy_image, trophy_rect)
+                else:
+                    util.play_sound(2)
 
-            over_text = font.render("Game Over!", True, BLUE)
-            screen.blit(over_text, (GAME_AREA_WIDTH + 10, 200))
+                data.update_high_score(score1)
+                time.sleep(3)
+                over_text = font.render("Game Over!", True, BLUE)
+                screen.blit(over_text, (GAME_AREA_WIDTH + 10, 240))
+
+            restart_text = font.render("Press Q to Quit", True, BLUE)
+            screen.blit(restart_text, (GAME_AREA_WIDTH + 10, 340))
 
             restart_text = font.render("Press R to restart", True, BLUE)
-            screen.blit(restart_text, (GAME_AREA_WIDTH + 10, 240))
-
-
-        # loop game
+            screen.blit(restart_text, (GAME_AREA_WIDTH + 10, 380))
+        
         pygame.display.flip()
         clock.tick(60)
 
