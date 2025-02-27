@@ -37,6 +37,7 @@ def main():
     GREEN = (0, 200, 0)
     RED = (255, 0, 0)
     BLUE = (0, 0, 255)
+    ORANGE = ( 242, 123, 24)
 
     # Font
     font_size = 25
@@ -94,6 +95,8 @@ def main():
         food = get_random_food_position(snake1 + snake2, GAME_AREA_WIDTH, HEIGHT, cell_size)
         game_state = 'playing'
         last_move_time = pygame.time.get_ticks()
+
+        msg = "End"
 
     # Get settings from settings screen
     mode, difficulty_str = settings.settings_screen(screen, font, large_font)
@@ -159,6 +162,11 @@ def main():
                 if multiplayer:
                     new_head2 = (snake2[0][0] + direction2[0], snake2[0][1] + direction2[1])
 
+                if (new_head2 in snake2):
+                    msg = "Player 1 bit Self !"
+                if (new_head2 in snake1):
+                    msg = "Player 1 bit Player 2 !"
+
                 if (new_head1 in snake1 or new_head1 in (snake2 if multiplayer else []) or
                     new_head1[0] < 0 or new_head1[0] >= GAME_AREA_WIDTH or
                     new_head1[1] < 0 or new_head1[1] >= HEIGHT):
@@ -173,6 +181,11 @@ def main():
                         snake1.pop()
 
                 if multiplayer:
+                    if (new_head2 in snake2):
+                        msg = "Player 2 bit Self !"
+                    if (new_head2 in snake1):
+                        msg = "Player 2 bit Player !"
+
                     if (new_head2 in snake2 or new_head2 in snake1 or
                         new_head2[0] < 0 or new_head2[0] >= GAME_AREA_WIDTH or
                         new_head2[1] < 0 or new_head2[1] >= HEIGHT):
@@ -229,25 +242,21 @@ def main():
 
         if game_state == 'game_over':
             if multiplayer:
-                if data.update_high_score(score1):
-                    winner = "Player 1"
-                if data.update_high_score(score2):
-                    winner = "Player 2"
-                over_text = font.render(f"NEW HIGH SCORE !!! \n\n by {winner}", True, BLUE)
-                screen.blit(over_text, (GAME_AREA_WIDTH + 10, 500))
+                if data.update_high_score(score1) or data.update_high_score(score2):
+                    over_text = font.render("NEW HIGH SCORE !!!", True, BLUE)
+                    screen.blit(over_text, (GAME_AREA_WIDTH + 10, 500))
 
-
-                overlay_active = True
-                if overlay_active:
-                    trophy_image = util.fetch_win()
-                    if trophy_image:
-                        trophy_rect = trophy_image.get_rect(center=(GAME_AREA_WIDTH // 2, HEIGHT // 2 + 50))
-                        screen.blit(trophy_image, trophy_rect)
-                        util.fetch_win()
-
-
+                    overlay_active = True
+                    if overlay_active:
+                        trophy_image = util.fetch_win()
+                        if trophy_image:
+                            trophy_rect = trophy_image.get_rect(center=(GAME_AREA_WIDTH // 2, HEIGHT // 2 + 50))
+                            screen.blit(trophy_image, trophy_rect)
+                            util.fetch_win()
+                time.sleep(2)
                 over_text = font.render("Game Over!", True, BLUE)
                 screen.blit(over_text, (GAME_AREA_WIDTH + 10, 200))
+
             else:
                 if data.update_high_score(score1):
                     over_text = font.render("NEW HIGH SCORE !!!", True, BLUE)
@@ -271,6 +280,9 @@ def main():
                 time.sleep(3)
                 over_text = font.render("Game Over!", True, BLUE)
                 screen.blit(over_text, (GAME_AREA_WIDTH + 10, 240))
+                
+                # faulter = font.render(f"Fault: \n {msg}", True, BLUE)
+                # screen.blit(faulter, (GAME_AREA_WIDTH + 10, 240))
 
             restart_text = font.render("Press Q to Quit", True, BLUE)
             screen.blit(restart_text, (GAME_AREA_WIDTH + 10, 340))
