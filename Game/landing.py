@@ -108,7 +108,7 @@ def settings_screen(screen, font, large_font):
         if selected_difficulty == 'asian':
             pygame.draw.circle(screen, GREEN, asian_pos, 5)  # Use asian_pos
         asian_label = font.render("Asian", True, WHITE)
-        screen.blit(asian_label, (asian_pos[0] + 10, asian_pos[1] - asian_label.get_height() // 2))  # Use asian_pos
+        screen.blit(asian_label, (asian_pos[0] + 30, asian_pos[1] - asian_label.get_height() // 2))  # Use asian_pos
         
         # Start button
         pygame.draw.rect(screen, BLUE, start_rect)

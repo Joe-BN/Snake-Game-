@@ -2,8 +2,8 @@ import pygame               # game rendering library
 import sys                  # access system file paths
 import random               # randomization library
 import time                 # time and delay
-import data                 # interact with database
-import util                 # utility functionalities
+import data        # interact with database
+import util         # utility functionalities
 import landing as settings  #ADD  the landing page
 
 def get_random_food_position(snake, game_width, game_height, cell_size):
@@ -215,7 +215,7 @@ def main():
         score_text = font.render(score_str, True, WHITE)
         screen.blit(score_text, (GAME_AREA_WIDTH + 10, 20))
 
-        diff_text = font.render(f"Difficulty: {difficulty}", True, WHITE)
+        diff_text = font.render(f"Difficulty: {difficulty_str}", True, WHITE)
         screen.blit(diff_text, (GAME_AREA_WIDTH + 10, 60))
 
         control_text = "Arrows to move" if not multiplayer else "P1: Arrows  P2: W/A/S/D"
