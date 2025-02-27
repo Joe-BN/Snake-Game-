@@ -1,57 +1,30 @@
 # Snake-Game-
 
-![nvimscreen](https://github.com/Joe-BN/Nvim/assets/128038111/597f8228-4669-4736-9860-76d00c19e296)
 
-Using [lazy.nvim](https://github.com/folke/lazy.nvim) to bring in some useful functionality without making it too complex.
+This project utilizes the power of [pygame](https://www.pygame.org/docs/) to render items and handle their interaction to make a Snake game with our touch 🌚
 
 Features include:
 + Base player (player 01): just like any other snake game
 + Difficulty levels (easy, medium, hard and Asian 😂)
 + High score storage in a database (mighty convenient)
 
++ ✨ Multiplayer mode ! 💎✨
 
-+ ✨ Multiplayer ! 💎✨
-
-  
 (All configured in code to be easy to modify)
 
 
 
 
-For those new to this:
+For those interested in moding the game:
+Pre requirments:
+  - Both [Python](https://www.python.org/downloads/) and [pip](https://pypi.org/project/pip/) installed
+  - Make sure to install the imported librarys (pygame and )
 
-+ 1st, Install Neovim & git with the package manager of your choice ( mine is pacman, coz I use Arch btw :) ):
 
-```
-$ sudo pacman -S neovim
-```
 
-and
+-> When you run ```$ tree .``` while inside ```Snake Game/``` , it should display this:
 
-```
-$ sudo pacman -S git
-```
-
-+ 2nd, Create the ```nvim/``` folder in your ```.config/``` folder
-+ 3rd, ``` cd ``` into ``` ~/.config/nvim ``` and clone the code from my repo from within with:
-```
-$ git clone https://github.com/Joe-BN/Nvim/config
-```
-
--> Run the following command to unpack all the necessary files into the current directory
-
-```
-$ mv Nvim/config/* .
-```
-
--> Run this to delete the ``` Nvim ``` folder gotten from github:
-``` 
-$ rm -rf Nvim
-```
-
--> When you run ```$ tree nvim``` while inside the ```.config/``` directory, it should display this:
-
-![nvimtree2](https://github.com/Joe-BN/Nvim/assets/128038111/17d26f0c-f854-4e02-a25a-3d9ed3517b32)
+![Image](https://github.com/user-attachments/assets/763b53a1-aeaf-4b28-9383-7b1d3fee7a8b)
 
 -> After the setup above, run ```$ nvim ``` and Lazy will download and sync the required dependencies.
 
