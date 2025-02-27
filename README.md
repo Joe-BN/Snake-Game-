@@ -1,7 +1,10 @@
 # Snake-Game-
 
+![Image](https://github.com/user-attachments/assets/eb537fe4-383b-4d56-b754-c2180a21ce82)
 
 This project utilizes the power of [pygame](https://www.pygame.org/docs/) to render items and handle their interaction to make a Snake game with our touch 🌚
+
+Kept the code sequential, so it's friendly for beginners getting into programming.
 
 Features include:
 + Base player (player 01): just like any other snake game
@@ -11,9 +14,6 @@ Features include:
 + ✨ Multiplayer mode ! 💎✨
 
 (All configured in code to be easy to modify)
-
-
-
 
 For those interested in moding the game:
 Pre requirments:
