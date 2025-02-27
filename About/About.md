@@ -1,6 +1,6 @@
 The code runs from a file structure as shown in the README.md file.(though the __pycache__ creates its self along with scores.db)
 
-The executable can be downloaded and played no code experience required 😄
+The [executable](https://github.com/Joe-BN/Snake-Game-/releases/) can be downloaded and played no code experience required 😄
 
 This command compiles the game (for windows) and makes sure it runs as a single .exe file (run while in the main directory of the game files)
 ```bash
