@@ -34,7 +34,7 @@ def get_high_score():
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     
-    # We assume the high score is stored in the row with id = 1.
+    # We assume the high score is stored in the row with id = 1.(witch may need to change later)
     cursor.execute("SELECT high_score FROM scores WHERE id = 1")
     row = cursor.fetchone()
     conn.close()

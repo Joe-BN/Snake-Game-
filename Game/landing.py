@@ -1,31 +1,34 @@
 import pygame
 import sys
 
-DARK_GREY = (50, 50, 50)
+DARK_GREY = (14, 9, 8)
 WHITE = (255, 255, 255)
 GREEN = (0, 200, 0)
 BLUE = (0, 100, 255)
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+
+SCREEN_WIDTH = 1020
+SCREEN_HEIGHT = 800
 
 def settings_screen(screen, font, large_font):
     clock = pygame.time.Clock()
     selected_mode = 'single'
     selected_difficulty = 'easy'
     
-    # Positions
-    title_pos = (SCREEN_WIDTH // 2, 50)
-    mode_label_pos = (SCREEN_WIDTH // 2, 100)
-    single_pos = (SCREEN_WIDTH // 2 - 50, 150)
-    multi_pos = (SCREEN_WIDTH // 2 - 50, 200)
-    diff_label_pos = (SCREEN_WIDTH // 2, 250)
-    easy_pos = (SCREEN_WIDTH // 2 - 50, 300)
-    medium_pos = (SCREEN_WIDTH // 2 - 50, 350)
-    hard_pos = (SCREEN_WIDTH // 2 - 50, 400)
-    asian_pos = (SCREEN_WIDTH // 2 - 50, 450) 
-    start_rect = pygame.Rect(SCREEN_WIDTH // 2 - 50, 500, 100, 50)
+    # Positions defination
+    y =100 # variable to reposiotion height (item y-possition)
+
+    title_pos = (SCREEN_WIDTH // 2, 70)
+    mode_label_pos = (SCREEN_WIDTH // 2, 100 + y)
+    single_pos = (SCREEN_WIDTH // 2 - 50, 150 + y)
+    multi_pos = (SCREEN_WIDTH // 2 - 50, 200 + y)
+    diff_label_pos = (SCREEN_WIDTH // 2, 250 + y)
+    easy_pos = (SCREEN_WIDTH // 2 - 50, 300 + y)
+    medium_pos = (SCREEN_WIDTH // 2 - 50, 350 + y)
+    hard_pos = (SCREEN_WIDTH // 2 - 50, 400 + y)
+    asian_pos = (SCREEN_WIDTH // 2 - 50, 450 + y) 
+    start_rect = pygame.Rect(SCREEN_WIDTH // 2 - 50, 500 + 40 + y, 100, 50)
     
-    # Clickable areas (fir inputs)
+    # Clickable areas inputs
     radio_size = 20
     single_rect = pygame.Rect(single_pos[0] - 10, single_pos[1] - 10, radio_size, radio_size)
     multi_rect = pygame.Rect(multi_pos[0] - 10, multi_pos[1] - 10, radio_size, radio_size)

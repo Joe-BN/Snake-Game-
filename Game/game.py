@@ -27,7 +27,7 @@ def main():
     cell_size = 20
 
     screen = pygame.display.set_mode((TOTAL_WIDTH, HEIGHT))
-    pygame.display.set_caption("Snake Game")
+    pygame.display.set_caption("Snake Game Pro")
 
     # Colors
     BLACK = (0, 0, 0)
@@ -48,7 +48,7 @@ def main():
     mult = 1
     move_interval = {
         1: 150,
-        2: 100, 
+        2: 90, 
         3: 60, 
         4: 30
     }
@@ -99,10 +99,10 @@ def main():
     mode, difficulty_str = settings.settings_screen(screen, font, large_font)
     multiplayer = (mode == 'multi')
     difficulty_map = {
-        'easy': 1, 
+        'easy':   1, 
         'medium': 2, 
-        'hard': 3, 
-        'asian': 4
+        'hard':   3, 
+        'asian':  4,
     }
     difficulty = difficulty_map[difficulty_str]
     mult_map = {
@@ -168,6 +168,7 @@ def main():
                     if new_head1 == food:
                         score1 += (1 * mult)
                         food = get_random_food_position(snake1 + (snake2 if multiplayer else []), GAME_AREA_WIDTH, HEIGHT, cell_size)
+                        util.play_sound(1)
                     else:
                         snake1.pop()
 
@@ -181,6 +182,8 @@ def main():
                         if new_head2 == food:
                             score2 += (1 * mult)
                             food = get_random_food_position(snake1 + snake2, GAME_AREA_WIDTH, HEIGHT, cell_size)
+                            util.play_sound(1)
+
                         else:
                             snake2.pop()
                 last_move_time = current_time
@@ -199,12 +202,12 @@ def main():
         pygame.draw.rect(screen, RED, (food[0], food[1], cell_size, cell_size))
 
         # grid display
-        #GRID_COLOUR = (85, 96, 97)
-        #for x in range(0, GAME_AREA_WIDTH, cell_size):
-        #    pygame.draw.line(screen, GRID_COLOUR, (x, 0), (x, HEIGHT))
+        GRID_COLOUR = (85, 96, 97)
+        for x in range(0, GAME_AREA_WIDTH, cell_size):
+            pygame.draw.line(screen, GRID_COLOUR, (x, 0), (x, HEIGHT))
 
-        #for y in range(0, HEIGHT, cell_size):
-        #    pygame.draw.line(screen, GRID_COLOUR, (0, y), (GAME_AREA_WIDTH, y))
+        for y in range(0, HEIGHT, cell_size):
+            pygame.draw.line(screen, GRID_COLOUR, (0, y), (GAME_AREA_WIDTH, y))
 
         pygame.draw.rect(screen, DARK_GREY, (GAME_AREA_WIDTH, 0, SIDE_MENU_WIDTH, HEIGHT))
         
@@ -228,14 +231,30 @@ def main():
 
         if game_state == 'game_over':
             if multiplayer:
+                if data.update_high_score(score1):
+                    winner = "Player 1"
+                if data.update_high_score(score2):
+                    winner = "Player 2"
+                over_text = font.render(f"NEW HIGH SCORE !!! \n\n by {winner}", True, BLUE)
+                screen.blit(over_text, (GAME_AREA_WIDTH + 10, 500))
+
+
+                overlay_active = True
+                if overlay_active:
+                    trophy_image = util.fetch_win()
+                    if trophy_image:
+                        trophy_rect = trophy_image.get_rect(center=(GAME_AREA_WIDTH // 2, HEIGHT // 2 + 50))
+                        screen.blit(trophy_image, trophy_rect)
+                        util.fetch_win()
+
+
                 over_text = font.render("Game Over!", True, BLUE)
                 screen.blit(over_text, (GAME_AREA_WIDTH + 10, 200))
             else:
                 if data.update_high_score(score1):
                     over_text = font.render("NEW HIGH SCORE !!!", True, BLUE)
                     screen.blit(over_text, (GAME_AREA_WIDTH + 10, 500))
-
-                    util.fetch_win()
+                                
 
                     overlay_active = True
                     if overlay_active:
@@ -243,10 +262,15 @@ def main():
                         if trophy_image:
                             trophy_rect = trophy_image.get_rect(center=(GAME_AREA_WIDTH // 2, HEIGHT // 2 + 50))
                             screen.blit(trophy_image, trophy_rect)
+                            util.fetch_win()
+                        
                 else:
+                    time.sleep(3)
                     util.play_sound(2)
 
                 data.update_high_score(score1)
+                if multiplayer: data.update_high_score(score2)
+                
                 time.sleep(3)
                 over_text = font.render("Game Over!", True, BLUE)
                 screen.blit(over_text, (GAME_AREA_WIDTH + 10, 240))
