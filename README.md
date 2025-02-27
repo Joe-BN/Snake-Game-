@@ -18,14 +18,26 @@ Features include:
 For those interested in moding the game:
 Pre requirments:
   - Both [Python](https://www.python.org/downloads/) and [pip](https://pypi.org/project/pip/) installed
-  - Make sure to install the imported librarys (pygame and )
+  - Make sure to install the imported librarys (pygame and sqlite)
+  - Git
 
-
+Procedure (terminal):
+  - Create a folder ```Snake_Game``` and ```cd``` into it;
+    ``` bash
+    $ mkdir Snake_Game
+    $ cd Snake_Game/
+    ```
+  - Clone this repository to local machine:
+    ``` bash
+    $ git clone https://github.com/Snake-Game
+    $ ls
+    ```
+  - List the files in the directory and run the program in terminal using ```python3```
 
 -> When you run ```$ tree .``` while inside ```Snake Game/``` , it should display this:
 
 ![Image](https://github.com/user-attachments/assets/763b53a1-aeaf-4b28-9383-7b1d3fee7a8b)
 
--> After the setup above, run ```$ nvim ``` and Lazy will download and sync the required dependencies.
+
 
 Enjoy     : )
