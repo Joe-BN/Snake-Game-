@@ -1,19 +1,36 @@
 """
-    Contail Utility functionality like:
+    Contain Utility functionality like:
         - Play sound
         - Handle images
         ...
 """
 import pygame
 import time
+import sys
+import os
 
+# Determine the base path
+if getattr(sys, 'frozen', False):
+    # When bundled by PyInstaller, use the temporary directory
+    base_path = sys._MEIPASS
+else:
+    # When running from source, use the script's directory
+    base_path = os.path.dirname(__file__)
 
+# Construct paths to resource folders
+sounds_dir = os.path.join(base_path, 'sounds')
+images_dir = os.path.join(base_path, 'images')
+
+# Initialize Pygame mixer
 pygame.mixer.init()
+
+# Load sounds with dynamic paths
 sounds = {
-    1: pygame.mixer.Sound("sounds/eat.mp3"),
-    2: pygame.mixer.Sound("sounds/game-over.mp3"),
-    3: pygame.mixer.Sound("sounds/HighScore.mp3"),
+    1: pygame.mixer.Sound(os.path.join(sounds_dir, 'eat.mp3')),
+    2: pygame.mixer.Sound(os.path.join(sounds_dir, 'game-over.mp3')),
+    3: pygame.mixer.Sound(os.path.join(sounds_dir, 'HighScore.mp3')),
 }
+
 # Dictionary to track current playing channels
 current_channels = {
     1: None,
@@ -25,18 +42,17 @@ def play_sound(track):
     """
     Ensures the sound only plays again after the current instance finishes.
     """
-    # Check if the sound's channel is None or not busy
     if current_channels[track] is None or not current_channels[track].get_busy():
-        # Play the sound and store its channel
         channel = sounds[track].play()
         current_channels[track] = channel
 
 def fetch_win():
     """
-    Fetch and return the trophy image, then play the win sound after a delay.
+    Fetch and return the trophy image, then play the win sound.
     """
     try:
-        trophy_image = pygame.image.load("images/Trophy.png").convert_alpha()
+        trophy_path = os.path.join(images_dir, 'Trophy.png')
+        trophy_image = pygame.image.load(trophy_path).convert_alpha()
         trophy_image = pygame.transform.scale(trophy_image, (300, 300))
     except Exception as e:
         print("Error loading trophy.png:", e)
@@ -45,14 +61,10 @@ def fetch_win():
     play_sound(3)
     return trophy_image
 
-
-
-
 if __name__ == "__main__":
-    # Simulate displaying the trophy and playing the sound by default
+    # Simulate displaying the trophy and playing the sound
     trophy = fetch_win()
     if trophy:
-        # Here you would display the trophy image in your game loop
         print("Displaying trophy...")
-        time.sleep(3)  # Wait 3 seconds
-        play_sound(3)  # Play "HighScore.mp3"
+        time.sleep(3)
+        play_sound(3)

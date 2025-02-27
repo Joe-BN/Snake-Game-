@@ -2,8 +2,8 @@ import pygame               # game rendering library
 import sys                  # access system file paths
 import random               # randomization library
 import time                 # time and delay
-import data as data         # interact with database
-import util as util         # utility functionalities
+import data                 # interact with database
+import util                 # utility functionalities
 import landing as settings  #ADD  the landing page
 
 def get_random_food_position(snake, game_width, game_height, cell_size):
@@ -222,8 +222,6 @@ def main():
         instruct_text = font.render(control_text, True, WHITE)
         screen.blit(instruct_text, (GAME_AREA_WIDTH + 10, 100))
 
-        instruct_text2 = font.render("1,2,3 or 4 for diff", True, WHITE)
-        screen.blit(instruct_text2, (GAME_AREA_WIDTH + 10, 140))
 
         high_score = data.get_high_score()
         high_score_text = font.render(f"High Score: {high_score}", True, WHITE)
@@ -265,7 +263,6 @@ def main():
                             util.fetch_win()
                         
                 else:
-                    time.sleep(3)
                     util.play_sound(2)
 
                 data.update_high_score(score1)
