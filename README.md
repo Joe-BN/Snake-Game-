@@ -1,6 +1,6 @@
 # Snake-Game-
 
-![Image](https://github.com/user-attachments/assets/eb537fe4-383b-4d56-b754-c2180a21ce82)
+![Image](https://github.com/user-attachments/assets/d5ab43ea-7212-46aa-8ec8-7f8bea59c4d0)
 
 This project utilizes the power of [pygame](https://www.pygame.org/docs/) to render items and handle their interaction to make a Snake game with our touch 🌚
 
